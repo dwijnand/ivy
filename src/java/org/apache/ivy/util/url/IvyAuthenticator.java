@@ -156,8 +156,8 @@ public final class IvyAuthenticator extends Authenticator {
             final Field f = Authenticator.class.getDeclaredField("theAuthenticator");
             f.setAccessible(true);
             return (Authenticator) f.get(null);
-        } catch (final ReflectiveOperationException e) {
-            handleReflectionException(e);
+        } catch (final NoSuchFieldException e) {
+        } catch (final IllegalAccessException e) {
         } catch (final RuntimeException e) {
             handleReflectionException0(e);
         }
@@ -168,22 +168,30 @@ public final class IvyAuthenticator extends Authenticator {
         try {
             final Method m = Authenticator.class.getDeclaredMethod("getDefault");
             return (Authenticator) m.invoke(null);
-        } catch (final ReflectiveOperationException e) {
-            handleReflectionException(e);
+        } catch (final NoSuchMethodException e) {
+        } catch (final InvocationTargetException e) {
+        } catch (final IllegalAccessException e) {
         } catch (final RuntimeException e) {
             handleReflectionException0(e);
         }
         return null;
     }
 
-    private static void handleReflectionException0(final RuntimeException e) {
+    private static void handleReflectionException0(final RuntimeException e0) {
         try {
-            throw e;
-        } catch (final SecurityException | ExceptionInInitializerError | IllegalArgumentException | ClassCastException | NullPointerException e) {
+            throw e0;
+        } catch (final SecurityException e) {
+            handleReflectionException(e);
+        } catch (final ExceptionInInitializerError e) {
+            handleReflectionException(e);
+        } catch (final IllegalArgumentException e) {
+            handleReflectionException(e);
+        } catch (final ClassCastException e) {
+            handleReflectionException(e);
+        } catch (final NullPointerException e) {
             handleReflectionException(e);
         }
     }
-
 
     private static void handleReflectionException(final Throwable t) {
         Message.debug("Error occurred while getting the original authenticator: " + t.getMessage());
